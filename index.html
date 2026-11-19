@@ -2413,9 +2413,9 @@ function drawHuman(x,y,o){
     else{ctx.fillStyle=st.skin;ctx.beginPath();ctx.ellipse(-sideSign*1.2,hy+1,1.7,2.2,0,0,TAU);ctx.fill();ctx.stroke();ctx.fillStyle=skD;ctx.beginPath();ctx.ellipse(-sideSign*1.2,hy+1.1,.7,1.2,0,0,TAU);ctx.fill()}
     humEars(st,dir,sideSign,hy);
     // beard sits behind the features: a jaw U that leaves cheeks, nose and lips clear
-    if(st.beard){ctx.fillStyle=hc;ctx.beginPath();
+    if(st.beard){ctx.fillStyle=dir==='D'?hc:sh(hc,1.15);ctx.beginPath();
       if(dir==='D'){ctx.moveTo(-5.8,hy+.4);ctx.quadraticCurveTo(-6.4,hy+7.4,0,hy+10);ctx.quadraticCurveTo(6.4,hy+7.4,5.8,hy+.4);ctx.lineTo(4,hy+.8);ctx.quadraticCurveTo(3.6,hy+3.9,0,hy+3.7);ctx.quadraticCurveTo(-3.6,hy+3.9,-4,hy+.8);ctx.closePath()}
-      else{ctx.ellipse(sideSign*1.4,hy+4.8,3.9,4.4,0,0,TAU)}
+      else{ctx.ellipse(sideSign*1.5,hy+5.7,3.9,3.6,0,0,TAU)}
       ctx.fill();ctx.fillStyle='rgba(255,255,255,.08)';ctx.beginPath();ctx.ellipse(sideSign*.6,hy+7,1.6,2.4,0,0,TAU);ctx.fill()}
     // eyes: white, iris, pupil, glint
     const isGK=st===ST.green;
@@ -9060,8 +9060,9 @@ function volume69(st,dir,ss,hy,hex){
   ctx.fillStyle=cols[1];ctx.strokeStyle='rgba(18,10,4,.55)';ctx.lineWidth=.25;
   for(const f of P.tufts){const x=f.x,y0=back?hy+3.6:hy+.2,L=long?f.L+3.4:f.L;if(!back)continue;
     ctx.beginPath();ctx.moveTo(x-f.w,y0);ctx.quadraticCurveTo(x-f.w*.2+(f.t-.5),y0+L*.55,x+(f.t-.5)*1.2,y0+L);ctx.quadraticCurveTo(x+f.w*.5,y0+L*.4,x+f.w,y0);ctx.closePath();ctx.fill();ctx.stroke()}
+  if(long&&back){const R=hrRng(hrSeed(key+'c'));const g2=ctx.createLinearGradient(0,hy,0,hy+13);g2.addColorStop(0,cols[2]);g2.addColorStop(1,cols[0]);ctx.fillStyle=g2;ctx.strokeStyle='rgba(18,10,4,.5)';ctx.lineWidth=.25;ctx.beginPath();ctx.moveTo(-6.6,hy);ctx.lineTo(-6.6,hy+10.5);for(let i=0;i<7;i++){const x=-6.6+(i+1)*(13.2/7);ctx.quadraticCurveTo(x-.95,hy+11.8+R()*1.6,x,hy+10.6+R()*.6)}ctx.lineTo(6.6,hy);ctx.closePath();ctx.fill();ctx.stroke()}
   // long hair: wavy panels falling outside the shoulders
-  if(long&&!back){const sides=front?[-1,1]:[-ss];for(const sd of sides){const R=hrRng(hrSeed(key+sd)),x0=sd*6.4;ctx.fillStyle=cols[1];ctx.beginPath();ctx.moveTo(x0,hy-1);let y=hy-1;const ex=x0+sd*1.7;ctx.lineTo(ex,y+1);for(let i=0;i<5;i++){y+=2.6;ctx.quadraticCurveTo(ex+sd*(.8+R()*.9),y-1.3,ex+sd*(R()-.3)*.8,y)}ctx.lineTo(x0+sd*.3,y+.4);ctx.lineTo(x0-sd*.8,hy+1);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle=cols[4];ctx.globalAlpha=.5;ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(x0+sd*.7,hy+1);ctx.quadraticCurveTo(x0+sd*1.6,hy+6,x0+sd*1,hy+11);ctx.stroke();ctx.globalAlpha=1;ctx.strokeStyle='rgba(18,10,4,.55)';ctx.lineWidth=.25}}
+  if(long&&!back){const sides=front?[-1,1]:[-ss];for(const sd of sides){const R=hrRng(hrSeed(key+sd)),x0=sd*6.4;ctx.fillStyle=cols[1];ctx.beginPath();ctx.moveTo(sd*5,hy-1);ctx.lineTo(x0,hy-1);let y=hy-1;const ex=x0+sd*1.7;ctx.lineTo(ex,y+1);for(let i=0;i<5;i++){y+=2.6;ctx.quadraticCurveTo(ex+sd*(.8+R()*.9),y-1.3,ex+sd*(R()-.3)*.8,y)}ctx.lineTo(x0+sd*.3,y+.4);ctx.lineTo(sd*5,y+.4);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle=cols[4];ctx.globalAlpha=.5;ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(x0+sd*.7,hy+1);ctx.quadraticCurveTo(x0+sd*1.6,hy+6,x0+sd*1,hy+11);ctx.stroke();ctx.globalAlpha=1;ctx.strokeStyle='rgba(18,10,4,.55)';ctx.lineWidth=.25}}
   ctx.restore();
 }
 volume69.c=new Map();
@@ -9109,6 +9110,53 @@ function sunShadow72(x,y,sc){
     for(let i=-1;i<=1;i++){ctx.fillStyle=st.skin||'#e0b490';ctx.beginPath();ctx.ellipse(hx+i*.9,hy2-1.8,.45,.9,i*.25,0,TAU);ctx.fill()}
     ctx.restore()}
 }}
+
+/* v73: solid beard mass under the strands so no skin shows through gaps */
+function beardFill73(st,dir,ss,hy,hx){
+  if(dir==='U'||st.hood||!st.beard||!hx||hx[0]!=='#')return;
+  const cols=hrCols(hx);ctx.save();
+  const g=ctx.createLinearGradient(0,hy,0,hy+10.5);g.addColorStop(0,cols[3]);g.addColorStop(.55,cols[2]);g.addColorStop(1,cols[1]);ctx.fillStyle=g;ctx.beginPath();
+  if(dir==='D'){
+    ctx.moveTo(-5.9,hy+.3);ctx.quadraticCurveTo(-6.5,hy+7.5,0,hy+10.2);ctx.quadraticCurveTo(6.5,hy+7.5,5.9,hy+.3);
+    ctx.lineTo(4,hy+.8);ctx.quadraticCurveTo(3.6,hy+3.9,0,hy+3.8);ctx.quadraticCurveTo(-3.6,hy+3.9,-4,hy+.8);ctx.closePath();ctx.fill();
+    ctx.beginPath();for(const sd of[-1,1]){ctx.moveTo(sd*.1,hy+2.9);ctx.quadraticCurveTo(sd*2.2,hy+2.7,sd*4,hy+3.9);ctx.quadraticCurveTo(sd*2.2,hy+4.6,sd*.1,hy+4)}ctx.fill();
+  }else{
+    const cx=ss*1.5,cy=hy+4.6,rx=3.9*1.12,ry=4.4*1.16;
+    for(let i=0;i<=16;i++){const th=.3+(PI-.7)*(i/16),c=Math.cos(th),s2=Math.sin(th),x=cx-ss*c*rx,y=cy+s2*ry;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}
+    for(let i=16;i>=0;i--){const th=.45+(PI-.35)*(i/16),c=Math.cos(th),s2=Math.sin(th),x=cx-ss*c*rx*.32,y=cy+s2*ry*.36+.2;ctx.lineTo(x,y)}
+    ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(ss*3.2,hy+3.1);ctx.quadraticCurveTo(ss*4.6,hy+3,ss*5.6,hy+3.8);ctx.quadraticCurveTo(ss*4.6,hy+4.4,ss*3.2,hy+3.9);ctx.fill();
+  }
+  ctx.restore();
+}
+const FEM77=new Set(['peasantF','lady','oldlady','guinevere','mere','nimue','queenh','morgan']);
+{const _fh=humFaceHair;humFaceHair=function(st,dir,ss,hy,hc){
+  const k=NPCKEY64.get(st);if(st&&!st.v&&(FEM77.has(k)||FEM65.has(k)))return; /* women: no beard, moustache or whisker-like brow strands */
+  beardFill73(st,dir,ss,hy,hairTone68(hc,HID66));return _fh.apply(this,arguments)}}
+
+/* v78: dense strands across the whole side-view beard so it reads as hair, not a patch */
+function beardSide78(st,dir,ss,hy,hc){
+  if(dir==='U'||dir==='D'||st.hood||!st.beard||!hc||hc[0]!=='#')return;
+  const cols=hrCols(hc),seed=hrSeed(hc+'s78'+HID66),h1=h66(HID66*7+4),curl=.05+h1*.1;CK66='s78'+dir+ss+hy+hc;
+  const cx=ss*1.5,cy=hy+4.6,rx=3.9*1.12,ry=4.4*1.16;
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  fp66((R,e)=>{for(let k=0;k<130;k++){const th=.35+(PI-.75)*R(),f=.25+R()*.8,c=Math.cos(th),sn=Math.sin(th),bi=Math.floor(R()*5);
+    const x0=cx-ss*c*rx*f,y0=cy+sn*ry*f*.9-.4,len=1.6+R()*2.4+f*1.2;
+    wv66(e,bi,x0,y0,x0+ss*(.3+R()*.5)*(c<0?1:.4),y0+len,ss*.2,curl,R)}},[cols[0],cols[1],cols[2],cols[3],cols[4]],seed,.3,.9);
+  ribbon67((R,e)=>{for(let k=0;k<60;k++){const a=R()*TAU,r=Math.sqrt(R()),x0=ss*1.5+Math.cos(a)*3.7*r,y0=hy+5.7+Math.sin(a)*3.3*r-.3,bi=Math.floor(R()*5);
+    wv66(e,bi,x0,y0,x0+ss*(R()*.6),y0+1.8+R()*2.2,ss*.15,curl,R)}},cols,seed+7,.32);
+  ctx.restore();
+}
+/* v78b: strands over the solid hair cap behind the ear (side views) so it is not a flat brown block */
+function hairBack78(st,dir,ss,hy){
+  if(dir==='U'||dir==='D'||st.hood||st.hairS==='bald'||!st.hair||st.hair[0]!=='#')return;
+  const hx=hairTone68(st.hair,HID66),cols=hrCols(hx),seed=hrSeed(hx+'b78'+HID66),h1=h66(HID66*3+1),curl=.05+h1*.1;CK66='b78'+dir+ss+hy+hx;
+  ctx.save();ctx.beginPath();ctx.arc(0,hy,6.25,0,TAU);ctx.clip();ctx.lineCap='round';ctx.lineJoin='round';
+  ribbon67((R,e)=>{for(let k=0;k<70;k++){const u=-6.4+R()*3.7,y0=hy-4.8+R()*7.6,bi=Math.floor(R()*5),len=2.2+R()*2.6;
+    wv66(e,bi,u*ss,y0,(u-.5-R()*.5)*ss,Math.min(hy+4.2,y0+len),-ss*.15,curl,R)}},cols,seed,.34);
+  ctx.restore();
+}
+{const _hh=humHair;humHair=function(st,dir,ss,hy){_hh.apply(this,arguments);hairBack78(st,dir,ss,hy)}}
+{const _fh=humFaceHair;humFaceHair=function(st,dir,ss,hy,hc){_fh.apply(this,arguments);if(!(st&&!st.v&&(FEM77.has(NPCKEY64.get(st))||FEM65.has(NPCKEY64.get(st)))))beardSide78(st,dir,ss,hy,hairTone68(hc,HID66))}}
 
 /* The Archivist: knows who said each one, and who will take it up later */
 const _arch85=TALK.archivist;
