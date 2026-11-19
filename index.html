@@ -2133,7 +2133,7 @@ function humHair(st,dir,sideSign,hy){
       for(const sd of[-1,1]){const g2=(R,e)=>{for(let k=0;k<5;k++){const xx=sd*(4.9+R()*1.3),bi=Math.floor(R()*nb);e(bi,xx,hy-2.2,xx+sd*.2,hy-.4,xx+sd*.1,hy+.8+R()*.7)}};hrPass(g2,cols,seed+sd+9,.32,.9)}
     }
     // flyaway wisps
-    ctx.strokeStyle=cols[3];ctx.globalAlpha=.45;ctx.lineWidth=.25;ctx.beginPath();const R2=hrRng(seed+99);for(let k=0;k<4;k++){const a=-PI*(.25+.5*R2()),x0=Math.cos(a)*6.1,y0=hy-2.3+Math.sin(a)*4.5;ctx.moveTo(x0,y0);ctx.quadraticCurveTo(x0*1.12,y0-.8,x0*1.2+R2()-.5,y0-1.8-R2())}ctx.stroke();ctx.globalAlpha=1;
+    ctx.strokeStyle=cols[3];ctx.globalAlpha=.45;ctx.lineWidth=.25;ctx.beginPath();const R2=hrRng(seed+99);for(let k=0;k<0;k++){const a=-PI*(.25+.5*R2()),x0=Math.cos(a)*6.1,y0=hy-2.3+Math.sin(a)*4.5;ctx.moveTo(x0,y0);ctx.quadraticCurveTo(x0*1.12,y0-.8,x0*1.2+R2()-.5,y0-1.8-R2())}ctx.stroke();ctx.globalAlpha=1;
   }
   ctx.restore();
 }
@@ -2173,7 +2173,7 @@ function humFaceHair(st,dir,sideSign,hy,hc){
         e(bi,sd*x0,y0,sd*((x0+x1)/2+(R()-.5)*.9),(y0+y1)/2+.4,sd*x1,y1)}};
       hrPass(gen,cols,seed,.5,.45);hrPass(gen,cols,seed+5,lw,.88);
       // chin wisps and curls that break the smooth outline
-      const wg=(R,e)=>{for(let k=0;k<7;k++){const x0=(R()-.5)*5,bi=Math.floor(R()*nb);e(bi,x0,hy+8.6+R(),x0*1.1+(R()-.5),hy+10.4,x0*1.15+(R()-.5)*.8,hy+11.4+R()*1.4)}};hrPass(wg,cols,seed+9,lw,.85);
+      const wg=(R,e)=>{for(let k=0;k<0;k++){const x0=(R()-.5)*5,bi=Math.floor(R()*nb);e(bi,x0,hy+8.6+R(),x0*1.1+(R()-.5),hy+10.4,x0*1.15+(R()-.5)*.8,hy+11.4+R()*1.4)}};hrPass(wg,cols,seed+9,lw,.85);
       // moustache: strands from beneath the nose sweeping out over the lip
       const mg=(R,e)=>{for(const sd of[-1,1])for(let k=0;k<6;k++){const bi=Math.floor(R()*nb),ex=1.8+k*.38,ey=hy+3.55+k*.1+R()*.3;e(bi,sd*(.25+R()*.3),hy+3.15,sd*(ex*.55),hy+3.1+k*.05,sd*ex,ey)}};
       hrPass(mg,cols,seed+13,.4,.92);
@@ -2461,7 +2461,11 @@ function drawHuman(x,y,o){
   humHair(st,dir,sideSign,hy);
   if(st.veil){ctx.fillStyle='rgba(235,235,245,.8)';ctx.beginPath();ctx.arc(0,hy-1,7,PI,TAU);ctx.lineTo(7,hy+12);ctx.lineTo(-7,hy+12);ctx.closePath();ctx.globalAlpha=.55;ctx.fill();ctx.globalAlpha=1}
   if(st.helm)armHelm(st,dir,sideSign,hy,fl);
-  if(st.crown){ctx.fillStyle=st.crown;ctx.fillRect(-5.5,hy-7,11,3);for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(-5.5+i*5.5,hy-7);ctx.lineTo(-3+i*5.5,hy-11);ctx.lineTo(-.5+i*5.5,hy-7);ctx.fill()}}
+  if(st.crown){ // one connected crown: band and three points sharing the same edge, with a little shading and a gem
+    const cw=11,bw=cw/3,c0=st.crown;ctx.save();ctx.fillStyle=c0;ctx.strokeStyle='rgba(60,40,8,.55)';ctx.lineWidth=.4;ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(-5.5,hy-4);ctx.lineTo(-5.5,hy-7);for(let i=0;i<3;i++){const x0=-5.5+i*bw;ctx.lineTo(x0+bw/2,hy-11);ctx.lineTo(x0+bw,hy-7)}ctx.lineTo(5.5,hy-4);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.28)';ctx.fillRect(-5.2,hy-6.6,10.4,.7);ctx.fillStyle='rgba(60,40,8,.25)';ctx.fillRect(-5.2,hy-4.9,10.4,.8);
+    ctx.fillStyle='#d83a4a';ctx.beginPath();ctx.arc(0,hy-5.5,.7,0,TAU);ctx.fill();ctx.restore()}
   if(st.hat){ctx.fillStyle=st.hat;ctx.beginPath();ctx.ellipse(0,hy-3,8,3,0,0,TAU);ctx.fill();ctx.beginPath();ctx.arc(0,hy-4,5,PI,TAU);ctx.fill()}
   }
   // arms + weapon
@@ -8876,7 +8880,7 @@ function wv66(e,bi,x0,y0,x1,y1,bow,amp,R){const mx=(x0+x1)/2,my=(y0+y1)/2,dx=x1-
   e(bi,x0,y0,(x0+mx)/2+nx*(bow+amp*s),(y0+my)/2+ny*(bow+amp*s),mx+nx*bow*.6,my+ny*bow*.6,(mx+x1)/2+nx*(bow-amp*s),(my+y1)/2+ny*(bow-amp*s),x1,y1)}
 function hair66(st,dir,ss,hy){
   if(st.hood||st.hairS==='bald'||!st.hair||st.hair[0]!=='#')return;
-  const T=NOWT,long=st.hairS==='long',base=st.hair,cols=hrCols(base),seed=hrSeed(base+'f'+HID66),nb=5,h1=h66(HID66*3+1),curl=.12+h1*.55,dens=1+h66(HID66*5+2)*.4;
+  const T=NOWT,long=st.hairS==='long',base=st.hair,cols=hrCols(base),seed=hrSeed(base+'f'+HID66),nb=5,h1=h66(HID66*3+1),curl=.05+h1*.12,dens=1+h66(HID66*5+2)*.4;
   CK66='h'+dir+ss+long+hy+base;ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
   const sway=(y,t,ph)=>0;
   if(dir==='U'){
@@ -8886,7 +8890,7 @@ function hair66(st,dir,ss,hy){
     ctx.strokeStyle=cols[4];ctx.globalAlpha=.5;ctx.lineWidth=.16;ctx.beginPath();const R3=hrRng(seed+5);for(let k=0;k<18;k++){const th=R3()*TAU,rr=3.4+R3()*2.4;ctx.moveTo(.4,hy-2.4);ctx.quadraticCurveTo(Math.cos(th-.4)*rr*.8,hy-2+Math.sin(th-.4)*rr*.8,Math.cos(th)*rr,hy+Math.sin(th)*rr)}ctx.stroke();ctx.globalAlpha=1;ctx.restore();
     if(long){const g2=(R,e)=>{for(let k=0;k<Math.floor(80*dens);k++){const x0=-5.8+R()*11.6,bi=Math.floor(R()*nb),len=10+R()*3,ph=R()*6,endx=x0+sway(hy+len,1,ph)*1.4+(R()-.5)*.6;wv66(e,bi,x0,hy+1,endx,hy+len,0,curl*(.5+R()),R)}};fp66(g2,cols,seed+3,.2,.75);
       // split ends
-      ctx.strokeStyle=cols[2];ctx.globalAlpha=.7;ctx.lineWidth=.14;ctx.beginPath();const R4=hrRng(seed+8);for(let k=0;k<14;k++){const x=-5.6+R4()*11.2,y=hy+9+R4()*3;ctx.moveTo(x,y);ctx.lineTo(x+(R4()-.5)*.9,y+1+R4()*.8)}ctx.stroke();ctx.globalAlpha=1}
+      ctx.strokeStyle=cols[2];ctx.globalAlpha=.7;ctx.lineWidth=.14;ctx.beginPath();const R4=hrRng(seed+8);for(let k=0;k<0;k++){const x=-5.6+R4()*11.2,y=hy+9+R4()*3;ctx.moveTo(x,y);ctx.lineTo(x+(R4()-.5)*.9,y+1+R4()*.8)}ctx.stroke();ctx.globalAlpha=1}
   }else{
     const front=dir==='D',px=front?-1.7:-ss*.6;
     const gen=(R,e)=>{for(let k=0;k<Math.floor(120*dens);k++){const u=R()*2-1,bi=Math.floor(R()*nb),j=R()*.7;let x1,y1;
@@ -8900,19 +8904,19 @@ function hair66(st,dir,ss,hy){
     ctx.strokeStyle=cols[4];ctx.globalAlpha=.6;ctx.lineWidth=.14;ctx.beginPath();const R5=hrRng(seed+21);for(let k=0;k<20;k++){const u=-.8+R5()*1.4,x1=u*5.7,y1=hy-3.6+Math.abs(u)*1.6;ctx.moveTo(px+u*.6,hy-6.4);ctx.quadraticCurveTo(u*6.4,hy-6,x1,y1)}ctx.stroke();
     ctx.strokeStyle=cols[0];ctx.globalAlpha=.5;ctx.lineWidth=.18;ctx.beginPath();for(let k=0;k<14;k++){const u=-.9+R5()*1.8,x1=u*5.9,y1=hy-2.4+Math.abs(u)*2;ctx.moveTo(px+u*.7,hy-6.2);ctx.quadraticCurveTo(u*6.1,hy-5.6,x1,y1)}ctx.stroke();ctx.globalAlpha=1;ctx.restore();
     // hairline: single fine strands curling out of the front edge
-    ctx.strokeStyle=cols[2];ctx.globalAlpha=.8;ctx.lineWidth=.14;ctx.beginPath();const R6=hrRng(seed+31);if(front)for(let k=0;k<22;k++){const x=-5.6+k*.51,y=hy-2.3+Math.abs(x)*.12;ctx.moveTo(x,y);ctx.quadraticCurveTo(x+(R6()-.5)*.8,y+.4,x+(R6()-.5)*1,y+.8+R6()*.6)}ctx.stroke();ctx.globalAlpha=1;
+    ctx.strokeStyle=cols[2];ctx.globalAlpha=.8;ctx.lineWidth=.14;ctx.beginPath();const R6=hrRng(seed+31);if(0)for(let k=0;k<22;k++){const x=-5.6+k*.51,y=hy-2.3+Math.abs(x)*.12;ctx.moveTo(x,y);ctx.quadraticCurveTo(x+(R6()-.5)*.8,y+.4,x+(R6()-.5)*1,y+.8+R6()*.6)}ctx.stroke();ctx.globalAlpha=1;
     if(long){ // long locks falling past the shoulders, each strand waving with the air
       const sides=front?[[-1,3.9,6.4],[1,3.9,6.4]]:[[ss>0?-1:1,2.6,6.4]];
       for(const[sd,x0,x1] of sides){const g2=(R,e)=>{for(let k=0;k<Math.floor(42*dens);k++){const xx=front?sd*(x0+R()*(x1-x0)):(ss>0?-(2.6+R()*3.8):2.6+R()*3.8),bi=Math.floor(R()*nb),len=hy+10+R()*3,ph=R()*6,out=(front?sd:xx>0?1:-1)*R()*.7;wv66(e,bi,xx,hy-2.2,xx+out+sway(len,1,ph),len,sd*.2,curl*.7,R)}};fp66(g2,cols,seed+sd*5+2,.2,.8)}
     }else if(front){for(const sd of[-1,1]){const g2=(R,e)=>{for(let k=0;k<12;k++){const xx=sd*(4.7+R()*1.5),bi=Math.floor(R()*nb);wv66(e,bi,xx,hy-2.3,xx+sd*.2,hy+.6+R()*1.1,sd*.15,.12,R)}};fp66(g2,cols,seed+sd+9,.2,.9)}}
     // flyaways (not through hats)
-    ctx.strokeStyle=cols[3];ctx.globalAlpha=.55;ctx.lineWidth=.14;ctx.beginPath();const R2=hrRng(seed+99);if(!st.hat)for(let k=0;k<10;k++){const a=-PI*(.15+.7*R2()),x0=Math.cos(a)*6,y0=hy-2.3+Math.sin(a)*4.6;ctx.moveTo(x0,y0);ctx.bezierCurveTo(x0*1.1+R2()-.5,y0-.8,x0*1.25+R2()-.5,y0-1.4-R2(),x0*1.2+R2()*1.2-.6,y0-2.4-R2()*1.2)}ctx.stroke();ctx.globalAlpha=1;
+    ctx.strokeStyle=cols[3];ctx.globalAlpha=.55;ctx.lineWidth=.14;ctx.beginPath();const R2=hrRng(seed+99);if(0)for(let k=0;k<10;k++){const a=-PI*(.15+.7*R2()),x0=Math.cos(a)*6,y0=hy-2.3+Math.sin(a)*4.6;ctx.moveTo(x0,y0);ctx.bezierCurveTo(x0*1.1+R2()-.5,y0-.8,x0*1.25+R2()-.5,y0-1.4-R2(),x0*1.2+R2()*1.2-.6,y0-2.4-R2()*1.2)}ctx.stroke();ctx.globalAlpha=1;
   }
   ctx.restore();
 }
 function beard66(st,dir,ss,hy,hc){
   if(dir==='U'||st.hood||!hc||hc[0]!=='#'||!st.beard)return;
-  const cols=hrCols(hc),nb=5,seed=hrSeed(hc+'g'+HID66),front=dir==='D',h1=h66(HID66*7+4),curl=.15+h1*.6;CK66='b'+dir+ss+hy+hc;
+  const cols=hrCols(hc),nb=5,seed=hrSeed(hc+'g'+HID66),front=dir==='D',h1=h66(HID66*7+4),curl=.06+h1*.14;CK66='b'+dir+ss+hy+hc;
   ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
   const bz=(p0,c,p1,t)=>{const m=1-t;return[m*m*p0[0]+2*m*t*c[0]+t*t*p1[0],m*m*p0[1]+2*m*t*c[1]+t*t*p1[1]]};
   if(front){
@@ -8929,7 +8933,7 @@ function beard66(st,dir,ss,hy,hc){
     // moustache: many fine strands from under the nose, sweeping and curling at the ends
     const mg=(R,e)=>{for(const sd of[-1,1])for(let k=0;k<14;k++){const bi=Math.floor(R()*nb),ex=1.4+k*.24,ey=hy+3.3+k*.07+R()*.3;wv66(e,bi,sd*(.2+R()*.3),hy+3.1,sd*ex,ey,sd*.1,.15+curl*.2,R)}};fp66(mg,cols,seed+13,.17,.9);
     // wisps at the cheek line and stray hairs
-    ctx.strokeStyle=cols[2];ctx.globalAlpha=.6;ctx.lineWidth=.13;ctx.beginPath();for(let k=0;k<16;k++){const x=(R7()-.5)*13,y=hy+1+R7()*7;ctx.moveTo(x,y);ctx.quadraticCurveTo(x+(R7()-.5)*1.4,y+.8,x+(R7()-.5)*1.6,y+1.8+R7())}ctx.stroke();ctx.globalAlpha=1;
+    ctx.strokeStyle=cols[2];ctx.globalAlpha=.6;ctx.lineWidth=.13;ctx.beginPath();for(let k=0;k<0;k++){const x=(R7()-.5)*13,y=hy+1+R7()*7;ctx.moveTo(x,y);ctx.quadraticCurveTo(x+(R7()-.5)*1.4,y+.8,x+(R7()-.5)*1.6,y+1.8+R7())}ctx.stroke();ctx.globalAlpha=1;
   }else{
     const cx=ss*1.4,cy=hy+4.8,rx=3.9,ry=4.4;
     const gen=(R,e)=>{for(let k=0;k<70;k++){const th=.55+(PI-.6)*((k+R()*.8)/70),bi=Math.floor(R()*nb),c=Math.cos(th),s=Math.sin(th);
@@ -8952,7 +8956,7 @@ function ribbon67(gen,cols,seed,w){ // each strand drawn as dark body plus a thi
 }
 function hair67(st,dir,ss,hy){
   if(st.hood||st.hairS==='bald'||!st.hair||st.hair[0]!=='#')return;
-  const long=st.hairS==='long',base=st.hair,cols=hrCols(base),seed=hrSeed(base+'k'+HID66),nb=5,h1=h66(HID66*3+1),curl=.2+h1*.6;
+  const long=st.hairS==='long',base=st.hair,cols=hrCols(base),seed=hrSeed(base+'k'+HID66),nb=5,h1=h66(HID66*3+1),curl=.06+h1*.14;
   CK66='k'+dir+ss+long+hy+base;ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
   const front=dir==='D';
   if(dir==='U'){
@@ -8972,7 +8976,7 @@ function hair67(st,dir,ss,hy){
 }
 function beard67(st,dir,ss,hy,hc){
   if(dir==='U'||st.hood||!hc||hc[0]!=='#'||!st.beard)return;
-  const cols=hrCols(hc),nb=5,seed=hrSeed(hc+'m'+HID66),front=dir==='D',h1=h66(HID66*7+4),curl=.2+h1*.6;CK66='m'+dir+ss+hy+hc;
+  const cols=hrCols(hc),nb=5,seed=hrSeed(hc+'m'+HID66),front=dir==='D',h1=h66(HID66*7+4),curl=.06+h1*.14;CK66='m'+dir+ss+hy+hc;
   ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
   const bz=(p0,c,p1,t)=>{const m=1-t;return[m*m*p0[0]+2*m*t*c[0]+t*t*p1[0],m*m*p0[1]+2*m*t*c[1]+t*t*p1[1]]};
   if(front){
@@ -9004,7 +9008,7 @@ function hairTone68(hex,id){
 }
 function style68(st,dir,ss,hy,hex){
   const id=HID66;if(!id||st.hood||st.hairS==='bald')return;const long=st.hairS==='long',h=h66(id*71+11),cols=hrCols(hex),front=dir==='D',back=dir==='U',hat=!!st.hat;
-  let type=long?(h<.34?'braid':h<.68?'bun':'loose'):(h<.28?'tail':h<.52&&!hat?'curls':'plain');if(type==='loose'||type==='plain')return;
+  let type=long?(h<.34?'braid':h<.68?'bun':'loose'):(h<.28?'tail':'plain');if(type==='loose'||type==='plain')return;
   ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='rgba(20,10,4,.6)';ctx.lineWidth=.25;
   const ribbon=['#c83a3a','#3a6ac8','#e0b040','#f0ead8'][Math.floor(h66(id*3+9)*4)];
   const plait=(x,y0,y1,w)=>{const n=Math.round((y1-y0)/1.3);for(let i=0;i<n;i++){const y=y0+i*1.3,dx=(i%2?-1:1)*.35;ctx.fillStyle=i%2?cols[1]:cols[2];ctx.beginPath();ctx.ellipse(x+dx,y+.7,w,.85,i%2?.5:-.5,0,TAU);ctx.fill();ctx.stroke()}ctx.strokeStyle=cols[4];ctx.globalAlpha=.5;ctx.lineWidth=.14;ctx.beginPath();for(let i=0;i<n;i++){ctx.moveTo(x-w*.6,y0+i*1.3+.4);ctx.lineTo(x+w*.5,y0+i*1.3+1)}ctx.stroke();ctx.globalAlpha=1;ctx.strokeStyle='rgba(20,10,4,.6)';ctx.lineWidth=.25;ctx.fillStyle=ribbon;ctx.fillRect(x-w-.1,y1,w*2+.2,1);ctx.fillStyle=cols[1];ctx.beginPath();ctx.moveTo(x-w*.8,y1+1);ctx.lineTo(x+w*.8,y1+1);ctx.lineTo(x+.2,y1+3.2);ctx.lineTo(x-.3,y1+3.2);ctx.closePath();ctx.fill()};
@@ -9033,21 +9037,28 @@ function volume69(st,dir,ss,hy,hex){
   const key='v'+hex+dir+ss+long+id;let P=volume69.c.get(key);
   if(!P){const R=hrRng(hrSeed(hex+'|'+id+'|'+long));P={ring:[],tufts:[]};
     const a0=PI*.86,a1=PI*2.14,n=22;
-    for(let i=0;i<=n;i++){const t=i/n,a=a0+(a1-a0)*t,bk=back?.4:(dir==='L'||dir==='R')?Math.max(0,Math.cos(a)*-ss)*.4:0;P.ring.push([a,6.45+R()*.7+bk*.4+Math.sin(t*PI)*.3])}
-    const m=back?11:7;for(let i=0;i<m;i++){const t=(i+R()*.6)/m,a=(back?PI*.15+PI*.7*t:(i<m/2?PI*(.86-.0*t):PI*.14)+0),x=back?(-5.4+t*10.8):0;P.tufts.push({x:back?x:Math.cos(a)*6.2*(i<m/2?1:1),t:R(),L:2+R()*2.6,w:.8+R()*.7,side:i<m/2?-1:1})}
+    for(let i=0;i<=n;i++){const t=i/n,a=a0+(a1-a0)*t,bk=back?.4:(dir==='L'||dir==='R')?Math.max(0,Math.cos(a)*-ss)*.4:0;P.ring.push([a,6.5+R()*.12+bk*.4+Math.sin(t*PI)*.3])}
+    const m=back?11:7;for(let i=0;i<m;i++){const t=(i+R()*.6)/m,a=(back?PI*.15+PI*.7*t:(i<m/2?PI*(.86-.0*t):PI*.14)+0),x=back?(-5.4+t*10.8):0;P.tufts.push({x:back?x:Math.cos(a)*6.2*(i<m/2?1:1),t:R(),L:1.2+R()*.7,w:1.2+R()*.5,side:i<m/2?-1:1})}
     volume69.c.set(key,P)}
+  ctx.save();ctx.beginPath();ctx.arc(0,hy,6.15,0,TAU);ctx.clip();
+  {const cg=ctx.createLinearGradient(-6,hy-7,6,hy+4);cg.addColorStop(0,cols[3]);cg.addColorStop(.5,cols[2]);cg.addColorStop(1,cols[1]);ctx.fillStyle=cg;ctx.beginPath();
+   if(back){ctx.rect(-7,hy-7,14,10.2)}
+   else if(front){ctx.moveTo(-7,hy+1.2);ctx.lineTo(-7,hy-7);ctx.lineTo(7,hy-7);ctx.lineTo(7,hy+1.2);ctx.lineTo(5.6,hy+1.2);ctx.quadraticCurveTo(5,hy-2.2,2.4,hy-3.1);ctx.quadraticCurveTo(0,hy-3.8,-2.4,hy-3.1);ctx.quadraticCurveTo(-5,hy-2.2,-5.6,hy+1.2);ctx.closePath()}
+   else{const q=(u,y)=>[u*ss,y];const pts=[[-7,hy+3.2],[-7,hy-7],[7,hy-7],[7,hy-1.2],[5.2,hy-1.5]];ctx.moveTo(...q(pts[0][0],pts[0][1]));for(let i=1;i<pts.length;i++)ctx.lineTo(...q(pts[i][0],pts[i][1]));ctx.quadraticCurveTo(ss*3.8,hy-2.9,ss*1.7,hy-2.6);ctx.lineTo(ss*-2.9,hy-2.6);ctx.quadraticCurveTo(ss*-3.1,hy+1.4,ss*-2.6,hy+3.2);ctx.closePath()}
+   ctx.fill()}
+  ctx.restore();
   ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
   const g=ctx.createLinearGradient(-7,hy-8,6,hy+2);g.addColorStop(0,cols[3]);g.addColorStop(.45,cols[2]);g.addColorStop(1,cols[0]);
   ctx.fillStyle=g;ctx.strokeStyle='rgba(18,10,4,.65)';ctx.lineWidth=.35;
   // scalloped outer edge, inner edge hugs the skull
   ctx.beginPath();let first=true,pa=null;
-  for(const [a,r] of P.ring){const x=Math.cos(a)*r,y=hy+Math.sin(a)*r*.98;if(first){ctx.moveTo(Math.cos(a)*5.9,hy+Math.sin(a)*5.9);ctx.lineTo(x,y);first=false}else{const ma=(a+pa[0])/2,mr=Math.max(r,pa[1])+.55;ctx.quadraticCurveTo(Math.cos(ma)*mr,hy+Math.sin(ma)*mr*.98,x,y)}pa=[a,r]}
+  for(const [a,r] of P.ring){const x=Math.cos(a)*r,y=hy+Math.sin(a)*r*.98;if(first){ctx.moveTo(Math.cos(a)*5.9,hy+Math.sin(a)*5.9);ctx.lineTo(x,y);first=false}else{const ma=(a+pa[0])/2,mr=Math.max(r,pa[1])+.2;ctx.quadraticCurveTo(Math.cos(ma)*mr,hy+Math.sin(ma)*mr*.98,x,y)}pa=[a,r]}
   ctx.lineTo(Math.cos(pa[0])*5.9,hy+Math.sin(pa[0])*5.9);ctx.arc(0,hy,5.9,pa[0],PI*.86,true);ctx.closePath();ctx.fill();ctx.stroke();
   // lit rim and shadow pocket
   ctx.strokeStyle=cols[4];ctx.globalAlpha=.55;ctx.lineWidth=.3;ctx.beginPath();ctx.arc(-1,hy-.4,6.3,PI*1.08,PI*1.55);ctx.stroke();ctx.strokeStyle=cols[0];ctx.globalAlpha=.5;ctx.beginPath();ctx.arc(0,hy,6.2,PI*1.75,PI*2.1);ctx.stroke();ctx.globalAlpha=1;
   // locks hanging at the nape / over the ears
   ctx.fillStyle=cols[1];ctx.strokeStyle='rgba(18,10,4,.55)';ctx.lineWidth=.25;
-  for(const f of P.tufts){const x=f.x,y0=back?hy+3.6:hy+.2,L=long?f.L+3.4:f.L;if(!back&&Math.abs(x)<5)continue;
+  for(const f of P.tufts){const x=f.x,y0=back?hy+3.6:hy+.2,L=long?f.L+3.4:f.L;if(!back)continue;
     ctx.beginPath();ctx.moveTo(x-f.w,y0);ctx.quadraticCurveTo(x-f.w*.2+(f.t-.5),y0+L*.55,x+(f.t-.5)*1.2,y0+L);ctx.quadraticCurveTo(x+f.w*.5,y0+L*.4,x+f.w,y0);ctx.closePath();ctx.fill();ctx.stroke()}
   // long hair: wavy panels falling outside the shoulders
   if(long&&!back){const sides=front?[-1,1]:[-ss];for(const sd of sides){const R=hrRng(hrSeed(key+sd)),x0=sd*6.4;ctx.fillStyle=cols[1];ctx.beginPath();ctx.moveTo(x0,hy-1);let y=hy-1;const ex=x0+sd*1.7;ctx.lineTo(ex,y+1);for(let i=0;i<5;i++){y+=2.6;ctx.quadraticCurveTo(ex+sd*(.8+R()*.9),y-1.3,ex+sd*(R()-.3)*.8,y)}ctx.lineTo(x0+sd*.3,y+.4);ctx.lineTo(x0-sd*.8,hy+1);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle=cols[4];ctx.globalAlpha=.5;ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(x0+sd*.7,hy+1);ctx.quadraticCurveTo(x0+sd*1.6,hy+6,x0+sd*1,hy+11);ctx.stroke();ctx.globalAlpha=1;ctx.strokeStyle='rgba(18,10,4,.55)';ctx.lineWidth=.25}}
